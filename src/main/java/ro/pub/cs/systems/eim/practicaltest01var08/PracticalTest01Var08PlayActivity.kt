@@ -1,11 +1,13 @@
 
 package ro.pub.cs.systems.eim.practicaltest01var08
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 
 class PracticalTest01Var08PlayActivity : AppCompatActivity() {
@@ -13,6 +15,7 @@ class PracticalTest01Var08PlayActivity : AppCompatActivity() {
     private lateinit var riddleTextView: TextView
     private lateinit var playerAnswerEditText: EditText
     private lateinit var checkButton: Button
+    private lateinit var backButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,6 +24,7 @@ class PracticalTest01Var08PlayActivity : AppCompatActivity() {
         riddleTextView = findViewById(R.id.riddleTextView)
         playerAnswerEditText = findViewById(R.id.playerAnswerEditText)
         checkButton = findViewById(R.id.checkButton)
+        backButton = findViewById(R.id.backButton)
 
         val riddle = intent.getStringExtra("riddle") ?: ""
         val correctAnswer = intent.getStringExtra("answer") ?: ""
@@ -36,7 +40,27 @@ class PracticalTest01Var08PlayActivity : AppCompatActivity() {
                 "No"
             }
 
-            Toast.makeText(this, result, Toast.LENGTH_SHORT).show()
+            returnResult(result)
         }
+
+        backButton.setOnClickListener {
+            returnResult("Fail")
+        }
+
+        onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    returnResult("Fail")
+                }
+            }
+        )
+    }
+
+    private fun returnResult(result: String) {
+        val resultIntent = Intent()
+        resultIntent.putExtra("result", result)
+        setResult(Activity.RESULT_OK, resultIntent)
+        finish()
     }
 }

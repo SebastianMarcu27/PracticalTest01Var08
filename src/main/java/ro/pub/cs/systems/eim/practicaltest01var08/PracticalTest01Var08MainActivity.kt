@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 
 class PracticalTest01Var08MainActivity : AppCompatActivity() {
@@ -13,6 +14,18 @@ class PracticalTest01Var08MainActivity : AppCompatActivity() {
     private lateinit var riddleEditText: EditText
     private lateinit var answerEditText: EditText
     private lateinit var playButton: Button
+
+    private val playLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val answerResult = result.data?.getStringExtra("result") ?: "Fail"
+
+        Toast.makeText(
+            this,
+            answerResult,
+            Toast.LENGTH_SHORT
+        ).show()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,9 +50,11 @@ class PracticalTest01Var08MainActivity : AppCompatActivity() {
                     this,
                     PracticalTest01Var08PlayActivity::class.java
                 )
+
                 intent.putExtra("riddle", riddle)
                 intent.putExtra("answer", answer)
-                startActivity(intent)
+
+                playLauncher.launch(intent)
             }
         }
     }
