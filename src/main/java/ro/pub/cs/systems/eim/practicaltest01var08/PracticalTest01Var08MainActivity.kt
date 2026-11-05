@@ -3,6 +3,7 @@ package ro.pub.cs.systems.eim.practicaltest01var08
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -15,16 +16,26 @@ class PracticalTest01Var08MainActivity : AppCompatActivity() {
     private lateinit var answerEditText: EditText
     private lateinit var playButton: Button
 
+    private var gameResult: String = "Fail"
+
+    companion object {
+        private const val TAG = "PracticalTest01Var08"
+        private const val RESULT_KEY = "game_result"
+    }
+
     private val playLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        val answerResult = result.data?.getStringExtra("result") ?: "Fail"
+
+        gameResult = result.data?.getStringExtra("result") ?: "Fail"
 
         Toast.makeText(
             this,
-            answerResult,
+            gameResult,
             Toast.LENGTH_SHORT
         ).show()
+
+        Log.d(TAG, "Game result: $gameResult")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,6 +45,21 @@ class PracticalTest01Var08MainActivity : AppCompatActivity() {
         riddleEditText = findViewById(R.id.riddleEditText)
         answerEditText = findViewById(R.id.answerEditText)
         playButton = findViewById(R.id.playButton)
+
+        if (savedInstanceState != null) {
+            gameResult = savedInstanceState.getString(
+                RESULT_KEY,
+                "Fail"
+            )
+
+            Toast.makeText(
+                this,
+                "Restored result: $gameResult",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            Log.d(TAG, "Restored result: $gameResult")
+        }
 
         playButton.setOnClickListener {
             val riddle = riddleEditText.text.toString().trim()
@@ -57,5 +83,13 @@ class PracticalTest01Var08MainActivity : AppCompatActivity() {
                 playLauncher.launch(intent)
             }
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString(RESULT_KEY, gameResult)
+
+        Log.d(TAG, "Saved result: $gameResult")
+
+        super.onSaveInstanceState(outState)
     }
 }
